@@ -98,6 +98,8 @@ namespace Concealment
                     ConcealGrids(Settings.Data.ConcealDistance);
                 if (_counter % (ulong)Settings.Data.RevealInterval == 0)
                     RevealGrids(Settings.Data.RevealDistance);
+                if (_counter % 600 == 0)
+                    UpdateConcealedGridPositions();
                 _counter += 1;
             }
 
@@ -381,6 +383,25 @@ namespace Concealment
                 Log.Info($"{concealedCount+concealed}/{totalCount} grids are concealed ({(concealedCount+concealed)/(float)totalCount:P}), {concealed} new.");
 
             return concealed;
+        }
+
+        private void UpdateConcealedGridPositions()
+        {
+            var sw = Stopwatch.StartNew();
+            var moved = 0;
+            foreach (var group in ConcealedGroups)
+            {
+                if (!group.IsConcealed) continue;
+                
+                group.UpdateAABB();
+                var bounds = group.WorldAABB;
+                if (_concealedAabbTree.MoveProxy(group.ProxyId, ref bounds, Vector3D.Zero))
+                {
+                    moved++;
+                }
+            }
+            Log.Debug($"Moved {moved} grid group positions in {sw.ElapsedMilliseconds}ms.");
+            sw.Stop();
         }
 
         public bool IsExcluded(ConcealGroup group)
