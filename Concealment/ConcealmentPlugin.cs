@@ -430,6 +430,13 @@ namespace Concealment
                     if (block == null)
                         continue;
 
+                    // Temporary patch. We want to conceal via production, but exempt these blocks.
+                    if (block.BlockDefinition.Id.SubtypeName == "BasicAssembler" ||
+                        block.BlockDefinition.Id.SubtypeName == "Blast Furnace")
+                    {
+                        continue;
+                    }
+
                     if (block is MyRefinery r && !Settings.Data.ConcealProduction && !r.InputInventory.Empty() && r.IsFunctional && r.Enabled)
                     {
                         Log.Debug($"{group.GridNames} exempted refinery ({r.CustomName} active)");
