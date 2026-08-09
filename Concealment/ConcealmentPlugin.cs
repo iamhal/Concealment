@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -425,6 +426,8 @@ namespace Concealment
             var exclude = false;
             Parallel.ForEach(group.Grids, grid =>
             {
+                if (!grid.IsStatic) return;
+                
                 foreach (var block in grid.CubeBlocks.Select(x => x.FatBlock))
                 {
                     if (block == null)
