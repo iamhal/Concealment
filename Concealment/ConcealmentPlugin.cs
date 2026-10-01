@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using NLog;
 using Sandbox.Engine.Multiplayer;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.EntityComponents;
 using Sandbox.Game.Multiplayer;
@@ -439,17 +440,27 @@ namespace Concealment
                     {
                         continue;
                     }
-
-                    if (block is MyRefinery r && !Settings.Data.ConcealProduction && !r.InputInventory.Empty() && r.IsFunctional && r.Enabled)
-                    {
-                        Log.Debug($"{group.GridNames} exempted refinery ({r.CustomName} active)");
-                        exclude = true;
-                        break;
-                    }
+                    
+                    // Disabled: refineries are covered by MyProductionBlock, and this was leaving grids unconcealed
+                    // if they were out of power or space for output
+                    // if (block is MyRefinery r && !Settings.Data.ConcealProduction && !r.InputInventory.Empty() && r.IsFunctional && r.Enabled)
+                    // {
+                    //     Log.Debug($"{group.GridNames} exempted refinery ({r.CustomName} active)");
+                    //     exclude = true;
+                    //     break;
+                    // }
 
                     if (block is MyProductionBlock p && !Settings.Data.ConcealProduction && p.IsProducing)
                     {
                         Log.Debug($"{group.GridNames} exempted production ({p.CustomName} active)");
+                        exclude = true;
+                        break;
+                    }
+                    
+                    // Added: allow ice processing
+                    if (block is MyGasGenerator g && !Settings.Data.ConcealProduction && g.IsProducing)
+                    {
+                        Log.Debug($"{group.GridNames} exempted production ({g.CustomName} active)");
                         exclude = true;
                         break;
                     }
