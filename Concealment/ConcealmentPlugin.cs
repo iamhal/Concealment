@@ -441,14 +441,14 @@ namespace Concealment
                         continue;
                     }
                     
-                    // Disabled: refineries are covered by MyProductionBlock, and this was leaving grids unconcealed
-                    // if they were out of power or space for output
-                    // if (block is MyRefinery r && !Settings.Data.ConcealProduction && !r.InputInventory.Empty() && r.IsFunctional && r.Enabled)
-                    // {
-                    //     Log.Debug($"{group.GridNames} exempted refinery ({r.CustomName} active)");
-                    //     exclude = true;
-                    //     break;
-                    // }
+                    // This check is overly lax, but needs to be to prevent solar-powered grids getting concealed in
+					// the post-restart window before power kicks in 
+                    if (block is MyRefinery r && !Settings.Data.ConcealProduction && !r.InputInventory.Empty() && r.IsFunctional && r.Enabled)
+                    {
+                        Log.Debug($"{group.GridNames} exempted refinery ({r.CustomName} active)");
+                        exclude = true;
+                        break;
+                    }
 
                     if (block is MyProductionBlock p && !Settings.Data.ConcealProduction && p.IsProducing)
                     {
